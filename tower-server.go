@@ -22,18 +22,20 @@ package main
 
 import (
 	"flag"
+	log "github.com/Sirupsen/logrus"
 	"github.com/gorilla/websocket"
 	"github.com/heia-fr/telecom-tower/ledmatrix"
 	"github.com/heia-fr/telecom-tower/tower"
 	"github.com/vharitonsky/iniflags"
-	"log"
 	"net/http"
+	"time"
 )
 
 const (
 	bitmapMsgQueueSize = 32
 	defaultBrightness  = 32
 	gpioPin            = 18
+	pingPeriod         = 30 * time.Second
 )
 
 type BitmapMessage struct {
@@ -88,6 +90,7 @@ func towerServer(stripesMsgQueue chan StripesMessage) {
 // displayBuilder goroutine. The rest of the job is done in the PostMessage
 // method.
 func main() {
+	log.Infoln("Starting tower")
 	var wsUrl = flag.String("websocket", "ws://telecom-tower.tk/stream", "Websocket URL")
 	var brightness = flag.Int(
 		"brightness", defaultBrightness,
@@ -107,15 +110,43 @@ func main() {
 	requestHeader := http.Header{}
 	conn, _, _ := dialer.Dial(*wsUrl, requestHeader)
 
+	messagePipe := make(chan BitmapMessage)
+
+	// Read from webservice and send to messagePipe channel
+	go func() {
+		for {
+			var message BitmapMessage
+			err := conn.ReadJSON(&message)
+			if err == nil {
+				log.Infoln("Message received")
+				messagePipe <- message
+			} else {
+				log.Infof("Error: %s. Re-opening connection", err)
+				conn, _, _ = dialer.Dial(*wsUrl+"?skip=true", requestHeader)
+			}
+		}
+	}()
+
+	ticker := time.NewTicker(pingPeriod)
+	defer ticker.Stop()
+
 	for {
-		var message BitmapMessage
-		err := conn.ReadJSON(&message)
-		if err == nil {
+		select {
+		case message := <-messagePipe:
 			sMsg <- StripesMessage{
 				message.Matrix.InterleavedStripes(),
 				message.Preamble, message.Checkpoint,
 			}
+		case <-ticker.C:
+			log.Debugln("Ping")
+			if err := conn.WriteMessage(websocket.PingMessage, []byte{}); err != nil {
+				log.Errorf("Error sending ping: %s", err)
+				conn, _, _ = dialer.Dial(*wsUrl+"?skip=true", requestHeader)
+			}
 		}
+
 	}
+
+	log.Infoln("Main loop terminated!")
 
 }
