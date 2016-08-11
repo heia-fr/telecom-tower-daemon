@@ -23,19 +23,17 @@ package main
 
 import (
 	"flag"
+	"github.com/BlueMasters/firebasedb"
 	log "github.com/Sirupsen/logrus"
 	"github.com/heia-fr/telecom-tower/ledmatrix"
 	"github.com/heia-fr/telecom-tower/tower"
 	"github.com/vharitonsky/iniflags"
-	"github.com/zabawaba99/firego"
 	"time"
 )
 
 const (
-	bitmapMsgQueueSize = 32
 	defaultBrightness  = 32
 	gpioPin            = 18
-	pingPeriod         = 30 * time.Second
 )
 
 type BitmapMessage struct {
@@ -107,69 +105,33 @@ func main() {
 	go towerServer(sMsg)
 
 	messagePipe := make(chan BitmapMessage)
-	f := firego.New(*firebaseUrl, nil)
 
-	notifications := make(chan firego.Event)
-	if err := f.Watch(notifications); err != nil {
+	ref, err := firebasedb.NewFirebaseDB(*firebaseUrl, "")
+	if err != nil {
 		log.Fatal(err)
 	}
 
-	defer f.StopWatching()
+	s, err := ref.SkipKeepAlive(true).Subscribe()
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer s.Close()
 
-	// Read from Firebase and send to messagePipe channel
+	// start the feeder
 	go func() {
-		for event := range notifications {
-			eventMap := event.Data.(map[string]interface{})
-
-            checkpoint, ok := eventMap["Checkpoint"].(float64)
-            if !ok {
-                continue
-            }
-
-            preamble, ok := eventMap["Preamble"].(float64)
-            if !ok {
-                continue
-            }
-
-            matrixMap, ok := eventMap["Matrix"].(map[string]interface{})
-            if !ok {
-                continue
-            }
-
-            matrixColumns, ok := matrixMap["Columns"].(float64)
-            if !ok {
-                continue
-            }
-
-            matrixRows, ok := matrixMap["Rows"].(float64)
-            if !ok {
-                continue
-            }
-
-            matrixBitmap, ok := matrixMap["Bitmap"].([]interface{})
-            if !ok {
-                continue
-            }
-
-            matrix := ledmatrix.NewMatrix(int(matrixRows), int(matrixColumns))
-            for i, c := range(matrixBitmap) {
-                matrix.Bitmap[i] = uint32(c.(float64))
-            }
-
-            message := BitmapMessage{
-                Checkpoint: int(checkpoint),
-                Preamble: int(preamble),
-                Matrix: matrix,
-            }
-
-            log.Infoln("Message received")
-            messagePipe <- message
-
+		for e := range s.Events() {
+			if e.Type == "put" {
+				log.Infoln("Message received")
+				var msg BitmapMessage
+				_, err := e.Value(&msg)
+				if err != nil {
+					log.Errorf("Error decoding event: %v", err)
+				} else {
+					messagePipe <- msg
+				}
+			}
 		}
 	}()
-
-	ticker := time.NewTicker(pingPeriod)
-	defer ticker.Stop()
 
 	for message := range messagePipe {
 		sMsg <- StripesMessage{
