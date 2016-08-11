@@ -10,13 +10,13 @@
     "version": {
         "name": "2.0.1",
         "desc": "Version 2.0.1",
-        "released": "2016-08-011",
+        "released": "2016-08-11",
         "gpgSign": false
     },
 
     "files": [
         {
-            "includePattern": "/home/travis/gopath/bin/linux_arm/(.*)",
+            "includePattern": "${GOPATH}/bin/linux_arm/(.*)",
             "uploadPattern": "bin/$1"
         }
     ],
