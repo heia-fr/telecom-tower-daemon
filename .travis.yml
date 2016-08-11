@@ -38,4 +38,5 @@ install:
 script:
   # This test must be run on a Raspberry Pi
   # So we are happy it it compiles properly
+  - find .
   - true
