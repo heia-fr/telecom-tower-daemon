@@ -46,6 +46,6 @@ deploy:
   provider: bintray
   file: bintray_desc.json
   user: supcik
-  dry-run: true
+  dry-run: false
   key:
     secure: ONbkoVGl3nlYq65w2+OszZzfFk/Ffk/naQc8+9EgYFcze/rD11CT+eqhiwHIvg8ODwJYbLy9OH8FwztWbLRsweRF6q5zLgElj3/NdMnLgBUeVLIKiXXJT4C9yM1ffD2B3KtTd4AjdFy7G90g2Xa5KzhHqEFqHP74+c2Bxw7bDOdSgGORSQvEJ0OEH8BCGO2XeGMomx4q3RpzpL9rK8aELfZoKOFI9+K00QiPwQpISL64Es7jgjWNARPjFCzeNH/b08oNCLw7rcmCi9QoKZPrSxh/1arpOzcDzstoeKBC7f8XJoI8TSSO3ODeqd9dLn2anXhy1w5sPtRRvW02Da2MjgL5+fMR+6cPcZ+VLyAyvVjU8RHgaYpWMofLKMXFl6XJ6A+olvZkiC8uNkDFqdk4DHVYGc2eXecVtc+aUUMGclK0rT7Igxbp9DJ+TH+kEuPKKjlCIaoA/xkmRS3z8lTk1FioY1K/UFE0avDuRiTC+TSORyVSKKFZKImmYQbju3FmCEnlRUIBRr6DshgBVsdqpSD53skfol6CtT87lkHSkLD2R8H4qq42/ehOsrx8NoTPR+52+5r8NneKvA8yaHvJz1YOgBUlhibeVjDKcs3KTGPEydnSdow4N6jOwVZyuODpuLCc7g+gwu0e+s+x0xHDfVVlAYjh3J0DVEravUKehUU=
