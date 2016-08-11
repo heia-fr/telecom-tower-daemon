@@ -105,7 +105,7 @@ func main() {
 
 	messagePipe := make(chan BitmapMessage)
 
-	ref, err := firebasedb.NewFirebaseDB(*firebaseUrl, "")
+	ref, err := firebasedb.NewFirebaseDB(*firebaseUrl)
 	if err != nil {
 		log.Fatal(err)
 	}

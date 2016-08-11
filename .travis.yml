@@ -35,20 +35,12 @@ script:
 - file telecom-tower-daemon
 - true
 deploy:
-  - provider: bintray
-    file: bintray_desc.json
-    user: supcik
-    dry-run: false
-    skip_cleanup: true
-    key:
-      secure: ONbkoVGl3nlYq65w2+OszZzfFk/Ffk/naQc8+9EgYFcze/rD11CT+eqhiwHIvg8ODwJYbLy9OH8FwztWbLRsweRF6q5zLgElj3/NdMnLgBUeVLIKiXXJT4C9yM1ffD2B3KtTd4AjdFy7G90g2Xa5KzhHqEFqHP74+c2Bxw7bDOdSgGORSQvEJ0OEH8BCGO2XeGMomx4q3RpzpL9rK8aELfZoKOFI9+K00QiPwQpISL64Es7jgjWNARPjFCzeNH/b08oNCLw7rcmCi9QoKZPrSxh/1arpOzcDzstoeKBC7f8XJoI8TSSO3ODeqd9dLn2anXhy1w5sPtRRvW02Da2MjgL5+fMR+6cPcZ+VLyAyvVjU8RHgaYpWMofLKMXFl6XJ6A+olvZkiC8uNkDFqdk4DHVYGc2eXecVtc+aUUMGclK0rT7Igxbp9DJ+TH+kEuPKKjlCIaoA/xkmRS3z8lTk1FioY1K/UFE0avDuRiTC+TSORyVSKKFZKImmYQbju3FmCEnlRUIBRr6DshgBVsdqpSD53skfol6CtT87lkHSkLD2R8H4qq42/ehOsrx8NoTPR+52+5r8NneKvA8yaHvJz1YOgBUlhibeVjDKcs3KTGPEydnSdow4N6jOwVZyuODpuLCc7g+gwu0e+s+x0xHDfVVlAYjh3J0DVEravUKehUU=
-
-  - provider: releases
-    api_key:
-      secure: UhiCFc/SUeQsIuFgUEdqtbX7plPGAr0D6zFrKXlZxm74oj436WYOlgVWUOWRZebZHT0/z0ix4rgg88iO+fg4MPSXZnPyWvC2q7J9c/mLxoKOf1h+rIBUBTRQNMIdiH284T8GnRAsI5zuivw7xJYqpHEU1ChorLkHRd+Y8b741erISf6Pg+Yw0v/tox6jt+59J5jO9YwBlqPUoRDBqOWlKxA7vozuUwLY/0YF/Z2DdPzF8FwDp4ntWE0ofiZa/HXNCJ9oS0ejBFEYg0D6p8eIVzOvgzC6IISILlcN1ikWgiXejBTK6YrbHU1PQbmlppFnD1EErBxDF+vkqpsWXq+MeetkqSc5aajRXUugvXFH7qlTbeqNKUiD4XLbrWQcGu+HiatBNJgQOpLe0g4pLQp2RUkWC7TzIV5RlN+IhcUIuRHt48d8hEbPntJ0iQfAzoeMWTNz1A6ryRP+MWe/K7VVYzBKrkrChn55AxOhWOUjDDc5cXdWTb1NstX8fW3W9syNMgIC92weQV9Lp0G5HxuKNgF4VXkPjC+LwlbMsgbK6Ov+457ZuI40JsZOjKYekutIInZZ2aQdWoKvV0WmGvygLnkXaBDrhYp+W6d2q7Ai1lK4eryKXrH6Mm+HWV2By396y/IyzDuQwHU0HMrpdf8PkvliiGud3kFNgd3V7qk6r64=
-    file: telecom-tower-daemon
-    skip_cleanup: true
-    overwrite: true
-    on:
-      repo: heia-fr/telecom-tower-daemon
-      tags: true
+  provider: releases
+  api_key:
+    secure: UhiCFc/SUeQsIuFgUEdqtbX7plPGAr0D6zFrKXlZxm74oj436WYOlgVWUOWRZebZHT0/z0ix4rgg88iO+fg4MPSXZnPyWvC2q7J9c/mLxoKOf1h+rIBUBTRQNMIdiH284T8GnRAsI5zuivw7xJYqpHEU1ChorLkHRd+Y8b741erISf6Pg+Yw0v/tox6jt+59J5jO9YwBlqPUoRDBqOWlKxA7vozuUwLY/0YF/Z2DdPzF8FwDp4ntWE0ofiZa/HXNCJ9oS0ejBFEYg0D6p8eIVzOvgzC6IISILlcN1ikWgiXejBTK6YrbHU1PQbmlppFnD1EErBxDF+vkqpsWXq+MeetkqSc5aajRXUugvXFH7qlTbeqNKUiD4XLbrWQcGu+HiatBNJgQOpLe0g4pLQp2RUkWC7TzIV5RlN+IhcUIuRHt48d8hEbPntJ0iQfAzoeMWTNz1A6ryRP+MWe/K7VVYzBKrkrChn55AxOhWOUjDDc5cXdWTb1NstX8fW3W9syNMgIC92weQV9Lp0G5HxuKNgF4VXkPjC+LwlbMsgbK6Ov+457ZuI40JsZOjKYekutIInZZ2aQdWoKvV0WmGvygLnkXaBDrhYp+W6d2q7Ai1lK4eryKXrH6Mm+HWV2By396y/IyzDuQwHU0HMrpdf8PkvliiGud3kFNgd3V7qk6r64=
+  file: telecom-tower-daemon
+  skip_cleanup: true
+  overwrite: true
+  on:
+    repo: heia-fr/telecom-tower-daemon
+    tags: true
