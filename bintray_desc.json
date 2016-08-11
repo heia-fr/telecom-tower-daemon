@@ -4,7 +4,7 @@
         "repo": "Telecom-Tower",
         "subject": "heia-fr",
         "vcs_url": "https://github.com/heia-fr/telecom-tower-daemon.git",
-        "licenses": ["Apache-2.0"],
+        "licenses": ["Apache-2.0"]
     },
 
     "version": {
@@ -14,9 +14,12 @@
         "gpgSign": false
     },
 
-    "files":
-        [
-        {"includePattern": "/home/travis/gopath/bin/linux_arm/(.*)", "uploadPattern": "bin/$1"}
-        ],
+    "files": [
+        {
+            "includePattern": "/home/travis/gopath/bin/linux_arm/(.*)",
+            "uploadPattern": "bin/$1"
+        }
+    ],
+
     "publish": true
 }
