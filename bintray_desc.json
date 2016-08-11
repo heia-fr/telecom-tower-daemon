@@ -16,7 +16,7 @@
 
     "files":
         [
-        {"includePattern": "${GOPATH}/bin/linux_arm/(.*)", "uploadPattern": "bin/$1"}
+        {"includePattern": "/home/travis/gopath/bin/linux_arm/(.*)", "uploadPattern": "bin/$1"}
         ],
     "publish": true
 }

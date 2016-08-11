@@ -34,12 +34,12 @@ install:
 - cd ${TRAVIS_BUILD_DIR}
 - go get ./...
 - go build
+- ls
 - go install
+- ls
 
 script:
 - file ${GOPATH}/bin/linux_arm/telecom-tower-daemon
-- pwd
-- find .
 - true
 
 deploy:
