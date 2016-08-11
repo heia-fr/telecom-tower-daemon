@@ -1,0 +1,22 @@
+{
+    "package": {
+        "name": "Telecom-Tower-Daemon",
+        "repo": "Telecom-Tower",
+        "subject": "heia-fr",
+        "vcs_url": "https://github.com/heia-fr/telecom-tower-daemon.git",
+        "licenses": ["Apache-2.0"],
+    },
+
+    "version": {
+        "name": "2.0.1",
+        "desc": "Version 2.0.1",
+        "released": "2016-08-011",
+        "gpgSign": false
+    },
+
+    "files":
+        [
+        {"includePattern": "${GOPATH}/bin/linux_arm/(.*)", "uploadPattern": "bin/$1"}
+        ],
+    "publish": true
+}
