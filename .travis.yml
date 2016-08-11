@@ -1,0 +1,41 @@
+language: go
+
+go:
+  - 1.6
+
+env:
+  global:
+    - CC=arm-linux-gnueabihf-gcc
+    - CXX=arm-linux-gnueabihf-g++
+    - LD=arm-linux-gnueabihf-g++
+    - AR=arm-linux-gnueabihf-ar
+    - STRIP=arm-linux-gnueabihf-strip
+
+before_install:
+  - sudo apt-get -qq update
+  - sudo apt-get install -y gcc-arm-linux-gnueabihf binutils-arm-linux-gnueabihf
+  - go get -d github.com/supcik-go/ws2811
+  - cd ${GOPATH}/src/github.com/supcik-go/ws2811
+  - git clone https://github.com/jgarff/rpi_ws281x.git
+  - cd rpi_ws281x
+  - rm -Rf golang
+  - patch -i ${TRAVIS_BUILD_DIR}/01_cross.patch
+  - scons
+  - cd ..
+  - patch -i ${TRAVIS_BUILD_DIR}/02_go.patch
+
+install:
+  - export CGO_ENABLED=1
+  - export GOOS=linux
+  - export GOARCH=arm
+  - export CC_FOR_TARGET=arm-linux-gnueabihf-gcc
+  - export CXX_FOR_TARGET=arm-linux-gnueabihf-g++
+  - export CPATH=${GOPATH}/src/github.com/supcik-go/ws2811/rpi_ws281x
+  - export LIBRARY_PATH=${GOPATH}/src/github.com/supcik-go/ws2811/rpi_ws281x
+  - go build
+  - go install
+
+script:
+  # This test must be run on a Raspberry Pi
+  # So we are happy it it compiles properly
+  - true

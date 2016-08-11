@@ -13,7 +13,8 @@
 // limitations under the License.
 
 // 2015-07-29 | JS | First version
-// 2015-11-18 | JS | Latest version
+// 2015-11-18 | JS | Using WebSocket
+// 2016-08-11 | JS | Version with Firebase DB instead of WebSockets
 
 //
 // Telecom Tower server
@@ -23,11 +24,10 @@ package main
 import (
 	"flag"
 	log "github.com/Sirupsen/logrus"
-	"github.com/gorilla/websocket"
 	"github.com/heia-fr/telecom-tower/ledmatrix"
 	"github.com/heia-fr/telecom-tower/tower"
 	"github.com/vharitonsky/iniflags"
-	"net/http"
+	"github.com/zabawaba99/firego"
 	"time"
 )
 
@@ -91,7 +91,7 @@ func towerServer(stripesMsgQueue chan StripesMessage) {
 // method.
 func main() {
 	log.Infoln("Starting tower")
-	var wsUrl = flag.String("websocket", "ws://telecom-tower.tk/stream", "Websocket URL")
+	var firebaseUrl = flag.String("firebase-url", "https://telecom-tower.firebaseio.com/currentBitmap", "Firebase URL")
 	var brightness = flag.Int(
 		"brightness", defaultBrightness,
 		"Brightness between 0 and 255.")
@@ -106,45 +106,76 @@ func main() {
 	sMsg := make(chan StripesMessage)
 	go towerServer(sMsg)
 
-	dialer := websocket.Dialer{}
-	requestHeader := http.Header{}
-	conn, _, _ := dialer.Dial(*wsUrl, requestHeader)
-
 	messagePipe := make(chan BitmapMessage)
+	f := firego.New(*firebaseUrl, nil)
 
-	// Read from webservice and send to messagePipe channel
+	notifications := make(chan firego.Event)
+	if err := f.Watch(notifications); err != nil {
+		log.Fatal(err)
+	}
+
+	defer f.StopWatching()
+
+	// Read from Firebase and send to messagePipe channel
 	go func() {
-		for {
-			var message BitmapMessage
-			err := conn.ReadJSON(&message)
-			if err == nil {
-				log.Infoln("Message received")
-				messagePipe <- message
-			} else {
-				log.Infof("Error: %s. Re-opening connection", err)
-				conn, _, _ = dialer.Dial(*wsUrl+"?skip=true", requestHeader)
-			}
+		for event := range notifications {
+			eventMap := event.Data.(map[string]interface{})
+
+            checkpoint, ok := eventMap["Checkpoint"].(float64)
+            if !ok {
+                continue
+            }
+
+            preamble, ok := eventMap["Preamble"].(float64)
+            if !ok {
+                continue
+            }
+
+            matrixMap, ok := eventMap["Matrix"].(map[string]interface{})
+            if !ok {
+                continue
+            }
+
+            matrixColumns, ok := matrixMap["Columns"].(float64)
+            if !ok {
+                continue
+            }
+
+            matrixRows, ok := matrixMap["Rows"].(float64)
+            if !ok {
+                continue
+            }
+
+            matrixBitmap, ok := matrixMap["Bitmap"].([]interface{})
+            if !ok {
+                continue
+            }
+
+            matrix := ledmatrix.NewMatrix(int(matrixRows), int(matrixColumns))
+            for i, c := range(matrixBitmap) {
+                matrix.Bitmap[i] = uint32(c.(float64))
+            }
+
+            message := BitmapMessage{
+                Checkpoint: int(checkpoint),
+                Preamble: int(preamble),
+                Matrix: matrix,
+            }
+
+            log.Infoln("Message received")
+            messagePipe <- message
+
 		}
 	}()
 
 	ticker := time.NewTicker(pingPeriod)
 	defer ticker.Stop()
 
-	for {
-		select {
-		case message := <-messagePipe:
-			sMsg <- StripesMessage{
-				message.Matrix.InterleavedStripes(),
-				message.Preamble, message.Checkpoint,
-			}
-		case <-ticker.C:
-			log.Debugln("Ping")
-			if err := conn.WriteMessage(websocket.PingMessage, []byte{}); err != nil {
-				log.Errorf("Error sending ping: %s", err)
-				conn, _, _ = dialer.Dial(*wsUrl+"?skip=true", requestHeader)
-			}
+	for message := range messagePipe {
+		sMsg <- StripesMessage{
+			message.Matrix.InterleavedStripes(),
+			message.Preamble, message.Checkpoint,
 		}
-
 	}
 
 	log.Infoln("Main loop terminated!")
