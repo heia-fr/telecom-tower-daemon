@@ -17,7 +17,7 @@
 // 2016-08-11 | JS | Version with Firebase DB instead of WebSockets
 
 //
-// Telecom Tower server
+// Telecom Tower Daemon
 //
 package main
 
