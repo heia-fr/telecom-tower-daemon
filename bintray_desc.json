@@ -16,8 +16,8 @@
 
     "files": [
         {
-            "includePattern": "${GOPATH}/bin/linux_arm/(.*)",
-            "uploadPattern": "bin/$1"
+            "includePattern": "telecom-tower-daemon",
+            "uploadPattern": "bin/telecom-tower-daemon"
         }
     ],
 
