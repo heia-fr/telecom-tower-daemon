@@ -28,7 +28,6 @@ import (
 	"github.com/heia-fr/telecom-tower/ledmatrix"
 	"github.com/heia-fr/telecom-tower/tower"
 	"github.com/vharitonsky/iniflags"
-	"time"
 )
 
 const (
