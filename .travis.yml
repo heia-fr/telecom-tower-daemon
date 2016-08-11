@@ -35,13 +35,9 @@ install:
   - cd ${TRAVIS_BUILD_DIR}
   - go get ./...
   - go install
-  - pwd
-  - echo ${TRAVIS_BUILD_DIR}
-  - echo ${GOPATH}
 
 script:
   # This test must be run on a Raspberry Pi
   # So we are happy it it compiles properly
-  - find ${TRAVIS_BUILD_DIR}
-  - find ${GOPATH}
+  - file ${GOPATH}/bin/linux_arm/telecom-tower-daemon
   - true
