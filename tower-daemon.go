@@ -105,12 +105,12 @@ func main() {
 
 	messagePipe := make(chan BitmapMessage)
 
-	ref, err := firebasedb.NewFirebaseDB(*firebaseUrl)
-	if err != nil {
+	ref := firebasedb.NewReference(*firebaseUrl)
+	if ref.Error != nil {
 		log.Fatal(err)
 	}
 
-	s, err := ref.SkipKeepAlive(true).Subscribe()
+	s, err := ref.Subscribe()
 	if err != nil {
 		log.Fatal(err)
 	}
