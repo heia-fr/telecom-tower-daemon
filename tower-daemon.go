@@ -31,8 +31,8 @@ import (
 )
 
 const (
-	defaultBrightness  = 32
-	gpioPin            = 18
+	defaultBrightness = 32
+	gpioPin           = 18
 )
 
 type BitmapMessage struct {
@@ -110,25 +110,29 @@ func main() {
 		log.Fatal(err)
 	}
 
-	s, err := ref.Subscribe()
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer s.Close()
-
 	// start the feeder
 	go func() {
-		for e := range s.Events() {
-			if e.Type == "put" {
-				log.Infoln("Message received")
-				var msg BitmapMessage
-				_, err := e.Value(&msg)
-				if err != nil {
-					log.Errorf("Error decoding event: %v", err)
-				} else {
-					messagePipe <- msg
+		for {
+			s, err := ref.Subscribe()
+			if err != nil {
+				log.Fatal(err)
+			}
+
+			for e := range s.Events() {
+				if e.Type == "put" {
+					log.Infoln("Message received")
+					var msg BitmapMessage
+					_, err := e.Value(&msg)
+					if err != nil {
+						log.Errorf("Error decoding event: %v", err)
+					} else {
+						// TODO: Check if msg is new.
+						messagePipe <- msg
+					}
 				}
 			}
+			log.Printf("Stream closed. Re-opening...")
+			s.Close()
 		}
 	}()
 
