@@ -25,6 +25,7 @@ import (
 	"flag"
 	"github.com/BlueMasters/firebasedb"
 	log "github.com/Sirupsen/logrus"
+	"github.com/cenkalti/backoff"
 	"github.com/heia-fr/telecom-tower/ledmatrix"
 	"github.com/heia-fr/telecom-tower/tower"
 	"github.com/vharitonsky/iniflags"
@@ -104,8 +105,10 @@ func main() {
 	go towerServer(sMsg)
 
 	messagePipe := make(chan BitmapMessage)
+	backOff := backoff.NewExponentialBackOff()
+	backOff.MaxElapsedTime = 0 // retry forever
 
-	ref := firebasedb.NewReference(*firebaseUrl)
+	ref := firebasedb.NewReference(*firebaseUrl).Retry(backOff)
 	if ref.Error != nil {
 		log.Fatal(err)
 	}
