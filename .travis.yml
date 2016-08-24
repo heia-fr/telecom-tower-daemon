@@ -1,6 +1,7 @@
 language: go
 go:
-- 1.6
+- 1.7
+
 env:
   global:
   - CC=arm-linux-gnueabihf-gcc
@@ -8,6 +9,7 @@ env:
   - LD=arm-linux-gnueabihf-g++
   - AR=arm-linux-gnueabihf-ar
   - STRIP=arm-linux-gnueabihf-strip
+
 before_install:
 - sudo apt-get -qq update
 - sudo apt-get install -y gcc-arm-linux-gnueabihf binutils-arm-linux-gnueabihf
@@ -20,6 +22,7 @@ before_install:
 - scons
 - cd ..
 - patch -i ${TRAVIS_BUILD_DIR}/02_go.patch
+
 install:
 - export CGO_ENABLED=1
 - export GOOS=linux
@@ -31,9 +34,11 @@ install:
 - cd ${TRAVIS_BUILD_DIR}
 - go get ./...
 - go build
+
 script:
 - file telecom-tower-daemon
 - true
+
 deploy:
   provider: releases
   api_key:
